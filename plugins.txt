@@ -1,0 +1,6 @@
+woocommerce
+woocommerce-gateway-stripe
+wp-graphql
+wp-graphql-cors-2.1
+wp-graphql-jwt-authentication-0.6.0
+wp-graphql-woocommerce-1

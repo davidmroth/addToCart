@@ -1,0 +1,6 @@
+.DS_Store
+.bak
+wordpress.code-workspace
+dev/htdocs/*
+dev/uploads/*
+dev/plugins/*

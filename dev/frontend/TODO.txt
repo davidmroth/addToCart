@@ -1,0 +1,4 @@
+Manual add
+Row edit
+Save data to localstorage
+Retreave data from localstorage
