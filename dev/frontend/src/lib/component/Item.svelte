@@ -27,6 +27,7 @@
     >
       remove
     </button>
+    <button>edit</button>
     <div class="duplicate" class:show={showDuplicate}>
       <input type="input" bind:this={duplicate} size="3" />
       <button
@@ -85,11 +86,16 @@
     display: grid;
     grid-template-columns: 225px 2fr 1fr 1fr 1fr 1fr 1fr;
     column-gap: 8px;
+    padding: 5px 0 5px 0;
   }
   .row:nth-child(odd) {
     background-color: aliceblue;
   }
   .row .small-text {
     font-size: 0.8rem;
+  }
+
+  .action {
+    padding-left: 10px;
   }
 </style>

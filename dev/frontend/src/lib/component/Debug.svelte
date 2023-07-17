@@ -1,11 +1,14 @@
-<script>
+<script lang="ts">
   import cartState from "$lib/store/cart";
+
+  export let hide: boolean = false;
+
   const clearSession = () => {
     cartState.clearSavedSession();
   };
 </script>
 
-<div class="debug corner">
+<div class="debug corner" class:hide>
   <button style="display:inline-block" on:click={clearSession}>
     Clear Session
   </button>
@@ -17,6 +20,9 @@
 </div>
 
 <style>
+  .corner.debug.hide {
+    display: none;
+  }
   .corner.debug {
     display: grid;
     display: none;

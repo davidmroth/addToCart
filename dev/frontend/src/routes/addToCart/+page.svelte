@@ -13,6 +13,7 @@
   let modalMessage: ModalMessage | boolean = false;
   let timer: number | undefined = undefined;
   let showIDField: boolean = false;
+  let hideDebug: boolean = true;
 
   onMount(async () => {
     console.log("[scanner] init");
@@ -121,7 +122,7 @@
   <meta name="description" content="Outreach | One Community Church" />
 </svelte:head>
 
-<section class="page">
+<section class="debug" class:hide={hideDebug}>
   <pre class="debug">{JSON.stringify(
       $cartManagement.debugOutput,
       null,
@@ -168,12 +169,19 @@
   >
     {showIDField ? "Hide" : "Show"} ID Field
   </button>
+  <button
+    on:click={function (e) {
+      hideDebug = !hideDebug;
+    }}
+  >
+    {hideDebug ? "Show" : "Hide"} Debug
+  </button>
   <pre>
   barcode: {barcodes}
   </pre>
 </section>
 
-<section class="page">
+<section class="data">
   <div class="details">
     <div>Campaign: {$cartManagement.campaign}</div>
     <div>Total Items: {$cartManagement.itemsCount}</div>
@@ -192,7 +200,7 @@
 
   <div class="table">
     <div class="header">
-      <div />
+      <div class="action" />
       <div class:hide={!showIDField}>ID</div>
       <div>BARCODE</div>
       <div>DESCRIPTION</div>
@@ -214,40 +222,41 @@
   div.hide {
     display: none;
   }
-  .debug {
+  section.debug.hide {
+    display: none;
+  }
+  pre.debug {
     height: 100px;
     overflow-y: scroll;
   }
-  .page,
-  .barcode {
+  section.barcode {
     padding: 20px;
   }
-  .details {
-    margin-bottom: 20px;
+  section.data {
+    padding: 20px 0 20px 0;
+  }
+  section.data .details {
+    padding: 20px;
   }
   .boxesDetails {
     margin-left: 20px;
   }
-  .table .header.hide {
-    grid-template-columns: 0px 2fr 1fr 1fr 1fr 1fr 1fr;
+  .barcode pre {
+    height: 20px;
   }
-
-  .table .header {
+  section.data .table .header {
     display: grid;
     grid-template-columns: 225px 2fr 1fr 1fr 1fr 1fr 1fr;
     column-gap: 8px;
   }
-  .table .header {
+  section.data .table .header {
     font-weight: bold;
     background-color: azure;
   }
-  .table .header .action {
+  section.data .table .header .action {
     display: grid;
     grid-template-columns: 25px 1fr 1fr;
     height: 15px;
     column-gap: 8px;
-  }
-  .barcode pre {
-    height: 20px;
   }
 </style>

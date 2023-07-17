@@ -1,4 +1,5 @@
 Manual add
 Row edit
+Edit to global
 Save data to localstorage
 Retreave data from localstorage

@@ -16,13 +16,13 @@
 <div class="modal" class:show={!!show}>
   <div class={`modal-header ${!!show && show.type}`}>
     <span class="close" on:click={handleClose}>&times;</span>
-    <h2>Modal Header</h2>
+    <h2>Error</h2>
   </div>
   <div class="modal-content">
     <p>{!!show && show.message}</p>
   </div>
   <div class={`modal-footer ${!!show && show.type}`}>
-    <h3>Modal Footer</h3>
+    <h3 />
   </div>
 </div>
 <div class="modal-background" class:show={!!show} />
