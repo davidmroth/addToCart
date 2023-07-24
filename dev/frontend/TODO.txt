@@ -1,5 +1,10 @@
-Manual add
-Row edit
-Edit to global
-Save data to localstorage
-Retreave data from localstorage
+Manual add (done)
+Retreave data from localstorage / Save data to localstorage (done)
+Row edit w/ Weight (done)
+Auto scroll to top with error messaging (done)
+Static details (done)
+Auto merge duplciate (done)
+
+
+Edit to global (?)
+Auto scroll to last scanned item

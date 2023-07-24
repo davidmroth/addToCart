@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from "svelte";
   import cartManagement, { getParser } from "$lib/store/process";
   import Item from "$lib/component/Item.svelte";
+  import type { Item as NewItem } from "$lib/store/process";
   import Modal, { type ModalMessage } from "$lib/component/Modal.svelte";
 
   const dataParser = getParser("api.barcodelookup.com");
@@ -10,10 +11,22 @@
   let pressed: string[] = [];
   let barcodeInput: HTMLInputElement;
   let checkbox: HTMLInputElement;
-  let modalMessage: ModalMessage | boolean = false;
+  let modalMessage: ModalMessage = { enabled: false };
   let timer: number | undefined = undefined;
   let showIDField: boolean = false;
   let hideDebug: boolean = true;
+  let mannualAdd: boolean = false;
+  let mannuallyAddedItem: NewItem = {
+    id: "manual",
+    barcode: "",
+    title: "manual",
+    category: "misc",
+    weight: "0 oz",
+    boxId: "",
+    categories: "misc (manually added)",
+    description: "A user submitted item",
+    qty: 1,
+  };
 
   onMount(async () => {
     console.log("[scanner] init");
@@ -29,9 +42,9 @@
     checkbox.dispatchEvent(new Event("change"));
   });
 
-  function showErrorMessage(message: string) {
-    console.log("[showErrorMessage]", message);
-    modalMessage = { message, type: "error" };
+  function showErrorMessage(text: string) {
+    console.log("[showErrorMessage]", text);
+    modalMessage = { enabled: true, text, type: "error" };
   }
 
   async function submit(barcode: string) {
@@ -79,6 +92,7 @@
       }, 2000);
       timer = undefined;
     }
+
     if ("value" in barcodeInput) barcodeInput.value = "";
     if (!checkbox.checked) barcodeInput.focus();
   }
@@ -115,6 +129,11 @@
       document.removeEventListener("keydown", handleKeydown);
     }
   }
+
+  function handleBatchAdd(event: CustomEvent<[string, boolean]>) {
+    const [id, checked] = event.detail;
+    cartManagement.batchAdd(id, checked);
+  }
 </script>
 
 <svelte:head>
@@ -138,7 +157,9 @@
   />
   <button
     on:click={function (e) {
-      submit(barcodeInput.value);
+      submit(barcodeInput.value).catch((err) => {
+        showErrorMessage(err.message);
+      });
     }}
   >
     Submit
@@ -153,17 +174,6 @@
   />
   <button
     on:click={function (e) {
-      cartManagement.newBox();
-      if (document.activeElement) {
-        document.activeElement.blur();
-        window.focus();
-      }
-    }}
-  >
-    New Box
-  </button>
-  <button
-    on:click={function (e) {
       showIDField = !showIDField;
     }}
   >
@@ -175,6 +185,18 @@
     }}
   >
     {hideDebug ? "Show" : "Hide"} Debug
+  </button>
+  <button
+    style="margin-left: 20px;"
+    on:click={function (e) {
+      cartManagement.newBox();
+      if (document.activeElement) {
+        document.activeElement.blur();
+        window.focus();
+      }
+    }}
+  >
+    New Box
   </button>
   <pre>
   barcode: {barcodes}
@@ -188,10 +210,10 @@
     <div>Total Weight: {$cartManagement.totalWeight?.toFixed(2)} pounds</div>
     <div>Total Boxes: {$cartManagement.totalBoxes}</div>
 
-    {#each Object.keys($cartManagement.boxes) as boxId}
+    {#each Object.keys($cartManagement.metaData.boxesMetaData) as boxId}
       <div class="boxesDetails">
-        Box ID: {$cartManagement.boxes[boxId].id} / Items: {$cartManagement
-          .boxes[boxId].count} / Weight: {$cartManagement.boxes[
+        Box ID: {$cartManagement.metaData.boxesMetaData[boxId].id} / Items: {$cartManagement
+          .metaData.boxesMetaData[boxId].count} / Weight: {$cartManagement.metaData.boxesMetaData[
           boxId
         ].weight?.toFixed(2)} pounds
       </div>
@@ -200,25 +222,56 @@
 
   <div class="table">
     <div class="header">
-      <div class="action" />
+      <div class="action">
+        <button
+          style="background-color: green; color: white;"
+          on:click={function (e) {
+            mannualAdd = !mannualAdd;
+          }}
+        >
+          [+] Add
+        </button>
+        <button
+          disabled={$cartManagement.metaData?.batchItems.length === 0}
+          on:click={() => {
+            cartManagement.batchRemove();
+          }}
+        >
+          [-] Remove</button
+        >
+      </div>
       <div class:hide={!showIDField}>ID</div>
       <div>BARCODE</div>
-      <div>DESCRIPTION</div>
+      <div>TITLE</div>
       <div>CATEGORY</div>
       <div>WEIGHT</div>
+      <div>QTY</div>
       <div>BOX ID</div>
+    </div>
+    <div class="manual-add" class:show={mannualAdd}>
+      <Item
+        showId={showIDField}
+        item={mannuallyAddedItem}
+        manualAddMode={true}
+      />
     </div>
     <div class="body">
       {#each $cartManagement.items as item}
-        <Item showId={showIDField} {item} />
+        <Item showId={showIDField} {item} on:batchAdd={handleBatchAdd} />
       {/each}
     </div>
   </div>
 </section>
 
-<Modal show={modalMessage} />
+<Modal message={modalMessage} />
 
 <style lang="scss">
+  div.manual-add {
+    display: none;
+  }
+  div.manual-add.show {
+    display: grid;
+  }
   div.hide {
     display: none;
   }
@@ -244,19 +297,24 @@
   .barcode pre {
     height: 20px;
   }
-  section.data .table .header {
+  .table .header {
     display: grid;
     grid-template-columns: 225px 2fr 1fr 1fr 1fr 1fr 1fr;
     column-gap: 8px;
   }
-  section.data .table .header {
-    font-weight: bold;
-    background-color: azure;
+  .table .body {
+    display: table;
+    overflow-y: scroll;
+    height: calc(100vh - 400px);
   }
-  section.data .table .header .action {
+  .action {
     display: grid;
-    grid-template-columns: 25px 1fr 1fr;
-    height: 15px;
+    grid-template-columns: 1fr 1fr;
     column-gap: 8px;
+    padding: 0px 24px 0px 35px;
+  }
+  .action button {
+    height: 20px;
+    font-size: 0.7em;
   }
 </style>

@@ -13,7 +13,8 @@ export function barcodelookup(data: any) {
         category: parseCategories(product.category),
         title: product.title,
         description: product.description,
-        weight: product.size
+        weight: product.size,
+        qty: 1,
     };
 
     // console.log("[ITEM]:", item)
