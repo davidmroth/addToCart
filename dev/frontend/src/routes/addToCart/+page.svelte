@@ -4,6 +4,8 @@
   import Item from "$lib/component/Item.svelte";
   import type { Item as NewItem } from "$lib/store/process";
   import Modal, { type ModalMessage } from "$lib/component/Modal.svelte";
+  import ItemResponsive from "$lib/component/Table/Item-responsive.svelte";
+  import "$lib/component/Table/style.css";
 
   const dataParser = getParser("api.barcodelookup.com");
 
@@ -219,48 +221,56 @@
       </div>
     {/each}
   </div>
+</section>
 
-  <div class="table">
-    <div class="header">
-      <div class="action">
-        <button
-          style="background-color: green; color: white;"
-          on:click={function (e) {
-            mannualAdd = !mannualAdd;
-          }}
-        >
-          [+] Add
-        </button>
-        <button
-          disabled={$cartManagement.metaData?.batchItems.length === 0}
-          on:click={() => {
-            cartManagement.batchRemove();
-          }}
-        >
-          [-] Remove</button
-        >
+<section>
+  <ol class="collection collection-container">
+    <li class="item item-container">
+      <div class="attribute select" />
+      <div class="attribute new-action">
+        <div class="default-action">
+          <button
+            style="background-color: green; color: white;"
+            on:click={function (e) {
+              mannualAdd = !mannualAdd;
+            }}
+          >
+            <i class="fa fa-plus s-NaQeCmoRB7Q8" />
+          </button>
+          <button
+            disabled={$cartManagement.metaData?.batchItems.length === 0}
+            on:click={() => {
+              cartManagement.batchRemove();
+            }}
+            style="background-color: red; color: white; border: #c9c9c9 1px solid;"
+          >
+            <i class="fa fa-trash" />
+          </button>
+        </div>
       </div>
-      <div class:hide={!showIDField}>ID</div>
-      <div>BARCODE</div>
-      <div>TITLE</div>
-      <div>CATEGORY</div>
-      <div>WEIGHT</div>
-      <div>QTY</div>
-      <div>BOX ID</div>
-    </div>
-    <div class="manual-add" class:show={mannualAdd}>
-      <Item
+      <div class="attribute item-id" class:hide={!showIDField}>id</div>
+      <div class="attribute barcode">barcode</div>
+      <div class="attribute title">title</div>
+      <div class="attribute category">category</div>
+      <div class="attribute weight">weight</div>
+      <div class="attribute qty">qty</div>
+      <div class="attribute box-id">box-id</div>
+    </li>
+    <div class:hide={!mannualAdd}>
+      <ItemResponsive
         showId={showIDField}
         item={mannuallyAddedItem}
         manualAddMode={true}
       />
     </div>
-    <div class="body">
-      {#each $cartManagement.items as item}
-        <Item showId={showIDField} {item} on:batchAdd={handleBatchAdd} />
-      {/each}
-    </div>
-  </div>
+    {#each $cartManagement.items as item}
+      <ItemResponsive
+        showId={showIDField}
+        {item}
+        on:batchAdd={handleBatchAdd}
+      />
+    {/each}
+  </ol>
 </section>
 
 <Modal message={modalMessage} />
@@ -316,5 +326,11 @@
   .action button {
     height: 20px;
     font-size: 0.7em;
+  }
+
+  .default-action {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 4px;
   }
 </style>

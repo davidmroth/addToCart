@@ -1,0 +1,180 @@
+ol.collection {
+  margin: 0px;
+  padding: 0px;
+}
+
+li {
+  list-style: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.item-container.hide {
+  display: none;
+}
+
+.item.item-container {
+  position: relative;
+}
+
+.attribute.data input {
+  width: 100%;
+}
+
+.attribute.data button {
+  width: 27px;
+}
+
+button[disabled] {
+  background-color: #eee !important;
+  color: black !important;
+  cursor: not-allowed !important;
+  font-style: italic;
+}
+
+/* 2 Column Card Layout */
+@media screen and (max-width: 736px) {
+  .collection-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+  }
+
+  .item {
+    border: 1px solid gray;
+    border-radius: 2px;
+    padding: 10px;
+  }
+
+  /* Don't display the first item, since it is used to display the header for tabular layouts*/
+  .collection-container > li:first-child {
+    display: none;
+  }
+
+  .attribute::before {
+    content: attr(data-name);
+    font-variant-caps: small-caps;
+    font-weight: bolder;
+  }
+
+  /* Attribute name for first column, and attribute value for second column. */
+  .attribute {
+    display: grid;
+    grid-template-columns: minmax(9em, 30%) 1fr;
+  }
+
+  .attribute.select {
+    position: absolute;
+    left: -137px;
+  }
+
+  .attribute.new-action {
+    margin-bottom: 30px;
+  }
+}
+
+/* 1 Column Card Layout */
+@media screen and (max-width: 580px) {
+  .collection-container {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .attribute.select {
+    position: absolute;
+    left: -137px;
+  }
+
+  .attribute.new-action {
+    margin-bottom: 30px;
+  }
+}
+
+/* Tabular Layout */
+@media screen and (min-width: 737px) {
+  /* The maximum column width, that can wrap */
+  .item-container {
+    display: grid;
+    grid-template-columns: 2em 7em 123px 10fr 3fr 100px 60px 70px;
+    grid-column-gap: 5px;
+  }
+  .attribute-container {
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(var(--column-width-min), 1fr)
+    );
+    padding: 2px;
+  }
+
+  /* Definition of wrapping column width for attribute groups. */
+  .new-action {
+    --column-width-min: 10em;
+  }
+
+  .item-id {
+    --column-width-min: 10em;
+  }
+
+  .barcode {
+    --column-width-min: 10em;
+  }
+
+  .title {
+    --column-width-min: 8em;
+  }
+
+  .category {
+    --column-width-min: 5em;
+  }
+  .category.data {
+    font-variant: all-petite-caps;
+  }
+
+  .weight {
+    --column-width-min: 5em;
+  }
+
+  .qty {
+    --column-width-min: 5em;
+  }
+
+  .box-id {
+    --column-width-min: 5em;
+  }
+
+  .collection {
+    border-top: 1px solid gray;
+  }
+
+  .attribute {
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    padding: 2px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .collection-container > .item-container:first-child {
+    background-color: blanchedalmond;
+    text-transform: uppercase;
+    /* font-variant: all-petite-caps; */
+    font-weight: bolder;
+    font-variant: initial;
+  }
+
+  .collection-container > .item-container:last-child {
+    margin-bottom: 40px;
+  }
+
+  .item-container > div:first-child {
+    border-left: 1px solid gray;
+  }
+
+  .item-container:hover {
+    background-color: rgb(200, 227, 252);
+  }
+}
