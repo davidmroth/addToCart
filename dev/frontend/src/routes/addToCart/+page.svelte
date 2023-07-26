@@ -207,7 +207,7 @@
 
 <section class="data">
   <div class="details">
-    <div>Campaign: {$cartManagement.campaign}</div>
+    <div>Campus: {$cartManagement.campaign}</div>
     <div>Total Items: {$cartManagement.itemsCount}</div>
     <div>Total Weight: {$cartManagement.totalWeight?.toFixed(2)} pounds</div>
     <div>Total Boxes: {$cartManagement.totalBoxes}</div>
@@ -254,7 +254,7 @@
       <div class="attribute category">category</div>
       <div class="attribute weight">weight</div>
       <div class="attribute qty">qty</div>
-      <div class="attribute box-id">box-id</div>
+      <div class="attribute box-id">box #</div>
     </li>
     <div class:hide={!mannualAdd}>
       <ItemResponsive

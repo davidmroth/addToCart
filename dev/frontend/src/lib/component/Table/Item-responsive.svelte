@@ -59,7 +59,12 @@
           <i class="fa fa-remove" />
         </button>
         <div class="duplicate" class:show={showDuplicate}>
-          <input type="input" bind:this={duplicate} size="3" />
+          <input
+            type="input"
+            bind:this={duplicate}
+            size="3"
+            placeholder="set qty"
+          />
           <button
             on:click={() => {
               cartManagement.duplicate(item.id, duplicate.value);
@@ -83,7 +88,7 @@
         </div>
       </div>
     {:else}
-      <div class="edit-action">
+      <div class="edit-action center">
         {#if manualAddMode}
           <button
             on:click={() => {
@@ -109,20 +114,28 @@
 
   {#if !isEditing}
     <div
-      class="attribute data item-id"
+      class="attribute data center item-id"
       data-name="item-id"
       class:hide={!showId}
     >
       {item.id}
     </div>
-    <div class="attribute data barcode" data-name="barcode">{item.barcode}</div>
-    <div class="attribute data title" data-name="title">{item.title}</div>
+    <div class="attribute data center barcode" data-name="barcode">
+      {item.barcode}
+    </div>
+    <div class="attribute data title" data-name="title">
+      {item.title}
+    </div>
     <div class="attribute data category" data-name="category">
       {item.category}
     </div>
-    <div class="attribute data weight" data-name="weight">{item.weight}</div>
-    <div class="attribute data qty" data-name="qty">{item.qty}</div>
-    <div class="attribute data box-id" data-name="box-id">{item.boxId}</div>
+    <div class="attribute data right weight" data-name="weight">
+      {item.weight}
+    </div>
+    <div class="attribute data center qty" data-name="qty">{item.qty}</div>
+    <div class="attribute data center box-id" data-name="box-id">
+      {item.boxId}
+    </div>
   {:else}
     <div class="attribute data item-id" class:hide={!showId}>
       {item.id}
