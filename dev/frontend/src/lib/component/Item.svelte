@@ -58,7 +58,7 @@
         <input type="input" bind:this={duplicate} size="3" />
         <button
           on:click={() => {
-            cartManagement.duplicate(item.id, duplicate.value);
+            cartManagement.duplicate(item.id, Number(duplicate.value));
             duplicate.value = "";
             duplicate.blur();
             showDuplicate = false;

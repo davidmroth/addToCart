@@ -99,6 +99,9 @@
     if (!checkbox.checked) barcodeInput.focus();
   }
 
+  // TODO: If blurring the barcode input field, then the scanner mode is automatically disabled
+  // Might be helpful: https://stackoverflow.com/questions/2381336/detect-click-outside-element
+  // https://stackoverflow.com/questions/19966417/prevent-typing-non-numeric-in-input-type-number
   function handleKeydown(e: KeyboardEvent) {
     console.log("[handleKeydown]", e.key);
 
@@ -193,7 +196,9 @@
     on:click={function (e) {
       cartManagement.newBox();
       if (document.activeElement) {
-        document.activeElement.blur();
+        if (document.activeElement && "blur" in document.activeElement) {
+          document.activeElement.blur();
+        }
         window.focus();
       }
     }}

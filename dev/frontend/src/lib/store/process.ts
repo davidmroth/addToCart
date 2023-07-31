@@ -113,7 +113,7 @@ const getDefaultState = (): Cart => {
   return JSON.parse(JSON.stringify({ ...defaultState, ...{ boxes: updateBoxDetails(defaultState) }, debugOutput: addDebugOutput(defaultState) }))
 }
 
-const processWeight = (weight: string): number => {
+const processWeight = (weight: string, qty: number): number => {
   let pounds: number = 0;
 
   const re = /(^[.?\d]+)(.*$)/;
@@ -121,40 +121,44 @@ const processWeight = (weight: string): number => {
 
   if (!match) return 0
 
-  switch (match[2].trim()) {
+  switch (match[2].trim().toLowerCase()) {
     case "kg":
-      pounds = Number(match[1]) / 0.45359237;
+      pounds = Number(match[1]) / 0.45359237 * qty;
       break;
 
     case "g":
-      pounds = Number(match[1]) * 0.002205;
+      pounds = Number(match[1]) * 0.002205 * qty;
       break;
 
     case "oz":
-      pounds = Number(match[1]) * 0.0625;
+      pounds = Number(match[1]) * 0.0625 * qty;
       break;
 
     default:
       pounds = 0;
   }
 
-  //console.log("[WEIGHT]:", weight, match, pounds);
+  //console.log("[WEIGHT]:", qty, weight, match, pounds);
   return pounds;
 }
 
 function refreshData(state: Cart): { totalWeight: number, itemsCount: number, metaData: MetaData } {
-  const itemsCount: number = state.items.length
+  const itemsCount: number = state.items.reduce((acc, item) => {
+    return acc += item.qty
+  }, 0)
   const totalWeight: number = state.items.reduce((acc: number, item: Item) => {
-    return acc += processWeight(item.weight || '0');
+    return acc += processWeight(item.weight || '0', item.qty);
   }, 0)
 
   const boxesMetaData: Boxes = state.metaData.boxes.reduce((acc: Boxes, boxId: number) => {
     acc[boxId] = {
       id: boxId.toString(),
       items: state.items.filter((item: Item) => item.boxId === boxId.toString()).map((item: Item) => item.id),
-      count: state.items.filter((item: Item) => item.boxId === boxId.toString()).length || 0,
+      count: state.items.filter((item: Item) => item.boxId === boxId.toString()).reduce((acc, item) => {
+        return acc += item.qty
+      }, 0) || 0,
       weight: state.items.filter((item: Item) => item.boxId === boxId.toString()).reduce((acc: number, item: Item) => {
-        return acc += processWeight(item?.weight || '0');
+        return acc += processWeight(item.weight || '0', item.qty);
       }, 0)
     }
 
@@ -177,7 +181,7 @@ function addDebugOutput(state: { items?: Item[], debugOutput?: object }) {
 
 function groupBarcodes(state: Cart): Item[] {
   // Group barcodes
-  const groupedBarcodes = state.items.reduce((acc: any, item: Item) => {
+  const groupedBarcodes = state.items.reduce((acc: { [id: string]: Item }, item: Item) => {
     const id = `${item.barcode}-${item.boxId}`
 
     if (!acc[id]) {
@@ -280,6 +284,9 @@ const cart: any = (function () {
         // Add box id to item
         item.boxId = state.metaData.currentBoxId.toString()
 
+        // Ensure qty is a number
+        item.qty = Number(item.qty) || 1
+
         // Add item to cart
         state.items.push(item)
 
@@ -336,7 +343,11 @@ const cart: any = (function () {
     },
     update: async (updatedItem: Item) => {
       console.log("[Update item]", updatedItem.id)
+      debugger
       try {
+        // Ensure qty is a number
+        updatedItem.qty = Number(updatedItem.qty)
+
         // Update item
         // TODO: Call remove()?
         const newState = { ...state, items: [...state.items.filter((item: Item) => item.id !== updatedItem.id), updatedItem] }
